@@ -19,7 +19,7 @@
 
 ## data 
 
-### 01
+### 01 Jonas, Ares, Andres
 - parsage CSV
 - GPS format GPX (XML parser)
 - photo géolocalisé
@@ -61,3 +61,9 @@
 - découpe de forme dans des images?
 - text
 - wav -> mp4
+
+## 
+
+- array
+- arrayList
+- transform
