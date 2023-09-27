@@ -5,6 +5,14 @@
 [Processing PDF](https://github.com/randomDam/memo_processing)
 
 ## Help/tutorials
+
+### Bases!
+
+- https://natureofcode.com/
+- https://www.youtube.com/@TheCodingTrain
+
+### Damien presentation
+
 - https://fr.flossmanuals.net/processing/introduction/
 - [Processing reference](https://processing.org/reference)
 - [exemple](https://processing.org/examples/)
