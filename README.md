@@ -1,20 +1,21 @@
 # 2023 09 md1_alpine-glacier | Creative Coding Resources
 
-## Presentation links
-
-- https://www.creativeapplications.net/
-- https://fr.flossmanuals.net/processing/introduction/
-
 ## Damien Bais Processing Memo
 
 [Processing PDF](https://github.com/randomDam/memo_processing)
 
 ## Help/tutorials
-
+- https://fr.flossmanuals.net/processing/introduction/
 - [Processing reference](https://processing.org/reference)
 - [exemple](https://processing.org/examples/)
 
+## Inspirations
+Please note that the code is not only in Processing Java version.
 
+- https://www.creativeapplications.net/
+- https://openprocessing.org/discover/#/trending
+- Examples from the book Generative Design (brought to you by Félicien). [Interactive renderings can also be found here](http://www.generative-gestaltung.de/2/). Please note that the online version is a JS processing version (P5.js). Use this resource simply for inspiration, and if you want the code, look in the book that's in your class. 
+- Exemple in Processing program. In processing, go to "files/examples". A window opens with examples you can run.
 
 
 ## data 
