@@ -46,5 +46,19 @@ float raqHeight=100;
 
 void raquette() {
   raqY=mouseY;
+  noStroke();
+  rect(raqX, raqY, raqWidth, raqHeight);
+}
+
+//-----------------------------------------
+//raquette 2
+float raq2X=40;
+float raq2Y=0;
+float raq2Width=20;
+float raq2Height=100;
+
+void raquette2() {
+  raqY=mouseY;
+  noStroke();
   rect(raqX, raqY, raqWidth, raqHeight);
 }
