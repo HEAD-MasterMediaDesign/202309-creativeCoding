@@ -16,10 +16,8 @@ void draw() {
   noStroke();
 
   for (int i=0; i<50; i++) {
-
     int px=int(random(width));
     int py=int(random(height));
-
     color col = img.get(px, py);
 
     //noFill();
