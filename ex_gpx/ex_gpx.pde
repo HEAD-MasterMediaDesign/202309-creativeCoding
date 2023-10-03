@@ -1,7 +1,7 @@
 GeoGpx map;
 
 void setup(){
-	size(800,800);
+	size(1200,800,P2D);
 	map = new GeoGpx();
 	map.addGpx("05_06_2016_Rando_course.gpx");
 	map.createGeoImages(sketchPath()+"/data/","JPG");
