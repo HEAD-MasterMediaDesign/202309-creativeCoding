@@ -17,7 +17,6 @@ class GeoGpx{
 	//CONSTRUCTOR
 	//-------------------------------------------------------------
 	GeoGpx() {
-		
 		tabImages = new ArrayList<GeoImage>();
 	}
 	
@@ -195,6 +194,13 @@ class GeoGpx{
 	}
 
 	//-------------------------------------------------------------
+	//get points
+	//-------------------------------------------------------------
+	ArrayList<GeoImage> getImages() {
+		return tabImages;
+	}
+
+	//-------------------------------------------------------------
 	// createGeoImages
 	//-------------------------------------------------------------
 	GeoImage[] createGeoImages(String path, String ext) {
@@ -296,6 +302,12 @@ class GeoImage extends pGPX{
 		float l = 6;
 		line(px-l, py-l, px+l, py+l);
 		line(px+l, py-l, px-l, py+l);
+	}
+	//-------------------------------------------------------------
+	//GET IMAGE
+	//-------------------------------------------------------------
+	PImage getImage() {
+		return ima;
 	}
 }
 
