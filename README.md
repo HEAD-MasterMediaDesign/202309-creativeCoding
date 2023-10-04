@@ -42,11 +42,19 @@ Please note that the code is not only in Processing Java version.
 - heic -> jpeg (nico?)
 - audio wave 4 channels -> MP3 (nico)
 
-### 02 Amdam, Lorenne, Enzo
+#### Digitales Pheromones
+
+- 
+
+### 02 Adam, Lorene, Enzo
 - image meta data
 - GPS format GPX (XML parser)
-- audio wave -> MP3 (nico)
+- audio wave <- MP3 (nico)
+    
+#### 
 
+- la qeustion des echelle / couche
+- regarder comment assembler les 3 concetpes
 
 ### 03 Leyla, Sarah
 - audio m4a
@@ -55,12 +63,25 @@ Please note that the code is not only in Processing Java version.
 - video .mov -> MP4/H264
 - audio wave -> mp4
 
+#### Drapeau religieux
+
+- question sur la représentation du sen en image fixe?
+- jouer avec la grille
+- flexible visuel system
+
 
 ### 04 Mathilde, Ocean
 - image OCR (nico)
 - audio wave -> mp4
 - photo JPG
 - 3d OBJ
+
+#### Carte postale | Nom?
+
+- interface processing (ne pas se perdre)
+- se concenter sur le rendu des cartes générées
+- prendre des images depuis internet
+- 
 
 
 ### 05 Basile, Naomi, Matis
@@ -69,6 +90,12 @@ Please note that the code is not only in Processing Java version.
 - video en .mov (nico)
 - video MTS
 
+#### Burning Mule in Mordor
+
+- creation d'un court conte
+- zoom
+- son
+
 
 ### 06 Dasha, Katya, Jasmine
 - svg
@@ -76,3 +103,7 @@ Please note that the code is not only in Processing Java version.
 - text
 - wav -> mp4
 
+#### Postales Cards
+
+- impression auto?
+- 3 couches
