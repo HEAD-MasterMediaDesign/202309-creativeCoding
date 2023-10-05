@@ -7,19 +7,20 @@ class Montagnes {
   float imgRatio;
   int time;
   PGraphics PGMontagne;
-  int canvasWidth;
-  int canvasHeight;
-  PGraphics pg;
+  int canvasWidth   = 50;
+  int canvasHeight  = 50;
 
+  Montagnes(
+          String[] imgMontagne,
+          String[] imgTrash,
+          int _canvasWidth,
+          int _canvasHeight
+  ) {
 
+    this.canvasWidth   = _canvasWidth;
+    this.canvasHeight  = _canvasHeight;
 
-  Montagnes(String[] imgMontagne, String[] imgTrash, int _canvasWidth, int _canvasHeight) {
-    this.canvasWidth = _canvasWidth;
-    this.canvasHeight = _canvasHeight;
-    
-    pg=createGraphics(50, 50);
-
-    this.PGMontagne = createGraphics(_canvasWidth, _canvasHeight);
+    this.PGMontagne = createGraphics(this.canvasWidth, this.canvasHeight);
 
 
 
@@ -56,13 +57,7 @@ class Montagnes {
   void update() {
 
     PGMontagne.beginDraw();
-    PGMontagne.background(100, 100);
-    PGMontagne.fill(255, 0, 0);
-    PGMontagne.rect(0, 0, 20, 20);
-
-    PGMontagne.endDraw();
-
-    PGMontagne.beginDraw();
+    //PGMontagne.background(0, 0, 255);
 
 
     //draw moutain

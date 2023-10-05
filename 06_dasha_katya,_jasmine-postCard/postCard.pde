@@ -11,8 +11,8 @@ String[] imgTrash = new String[19];
 
 void setup() {
 
-  
-  
+
+
   size(740, 520, P2D);
 
 
@@ -35,26 +35,28 @@ void setup() {
 
   // Initialize the objects with the images names
   textures = new Bg(textureArtNames, textureNatNames);
-  montblanc = new Montagnes(imageNames, imgTrash,width,height);
+  montblanc = new Montagnes(imageNames, imgTrash, width, height);
   txt = new Txt();
   background(255);
 
-  push();
-  //textures.draw();
-  //textures.mousePressed();
-  pop();
-  
-//  txt.draw();
-
+  //  txt.draw();
 }
 
 void draw() {
 
+  background(255, 255, 255);
 
-  image(montblanc.pg,9,30);
+  push();
+  textures.draw();
+  //textures.mousePressed();
+  pop();
+
   montblanc.update();
-  image(montblanc.PGMontagne,montblanc.canvasWidth, montblanc.canvasHeight);
-  
-  //txt.draw();
+  image(
+    montblanc.PGMontagne,
+    0,
+    0
+    );
 
+  txt.draw();
 }
