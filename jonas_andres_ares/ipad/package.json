@@ -1,0 +1,16 @@
+{
+  "name": "alpine-glaciers-ipad",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host --port 2222",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^4.4.5",
+    "vite-plugin-mkcert": "^1.16.0",
+    "vite-plugin-qrcode": "^0.2.2"
+  }
+}
