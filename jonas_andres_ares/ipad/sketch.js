@@ -24,24 +24,18 @@ function setup() {
   networkData = table.rows.map((entry) => entry.obj);
 
   calculateTotalArea();
-
+  
   for (let i = 0; i < networkData.length; i++) {
     let pLat = parseFloat(networkData[i].Latitude);
     let pLong = parseFloat(networkData[i].Longitude);
 
     if (!(pLat && pLong)) continue;
 
-    networkData[i].xMeter =
-      turf.distance(
-        turf.point([minLong, maxLat]),
-        turf.point([pLong, maxLat])
-      ) * 1000;
-    networkData[i].yMeter =
-      turf.distance(
-        turf.point([minLong, maxLat]),
-        turf.point([minLong, pLat])
-      ) * 1000;
+    const m = coordinatesToMeter(pLong, pLat);
+    networkData[i].xMeter = m.xMeter;
+    networkData[i].yMeter = m.yMeter;
 
+    networkData[i].signalStrength = map(parseInt(networkData[i].RSSI), 0, -121, 1, 0);
     networkData[i].index = i;
   }
 
@@ -71,8 +65,12 @@ function setup() {
 
   console.log("🚀 ~ setup ~ networkData:", networkData);
 
-  meterToCoordinate(networkData[20138].xMeter, networkData[20138].yMeter)
-  console.log("🚀 ~ setup ~ networkData[20138]:", networkData[20138]);
+  const coord = meterToCoordinate(
+    networkData[2138].xMeter,
+    networkData[2138].yMeter
+  );
+  console.log("🚀 ~ setup ~ coord:", coord);
+  console.log("🚀 ~ setup ~ networkData[20138]:", networkData[2138]);
 }
 
 function draw() {
@@ -95,6 +93,9 @@ function draw() {
 
   fill(255);
   noStroke();
+
+  textSize(16);
+  textAlign(LEFT);
   text(round(frameRate()) + " FPS", 20, 20);
 
   text(
@@ -102,6 +103,62 @@ function draw() {
     20,
     height - 20
   );
+
+  const currentPosition = pixelToMeters(width / 2, height / 2);
+  const currentCoordinate = meterToCoordinate(
+    currentPosition.xMeter,
+    currentPosition.yMeter
+  );
+
+  textAlign(RIGHT);
+  text(
+    currentCoordinate.lat.toFixed(5) +
+      "°N, " +
+      currentCoordinate.long.toFixed(5) +
+      "°E",
+    width - 20,
+    height - 20
+  );
+}
+
+function drawArea() {
+  viewYHeight = viewXWidth / (width / height);
+
+  const xPointsInView = findElementsInRange(
+    networkDataXSorted,
+    viewXOrigin,
+    viewXOrigin + viewXWidth,
+    "xMeter"
+  );
+  const yPointsInView = findElementsInRange(
+    networkDataYSorted,
+    viewYOrigin,
+    viewYOrigin + viewYHeight,
+    "yMeter"
+  );
+  const pointsInView = _.intersectionBy(xPointsInView, yPointsInView, "index");
+
+  for (let i = 0; i < pointsInView.length; i++) {
+    let pXMeter = pointsInView[i].xMeter;
+    let pYMeter = pointsInView[i].yMeter;
+
+    const { xPixel, yPixel } = meterToPixel(pXMeter, pYMeter);
+
+    // console.log("🚀 ~ drawArea ~ pointsInView[i].type:", pointsInView[i].type);
+    if (pointsInView[i].Type === "BT" || pointsInView[i].Type === "BLE") {
+      const noiseX = noise(pXMeter + millis() * 0.0004);
+      const noiseY = noise(pYMeter + millis() * 0.0004 + 8989);
+      // map(noiseX, 0,1 -10, 10)
+      circle(
+        xPixel + map(noiseX, 0, 1, -120, 120),
+        yPixel + map(noiseY, 0, 1, -120, 120),
+        5
+      );
+    } else if (pointsInView[i].Type === "WIFI") {
+      // rectMode(CENTER);
+      circle(xPixel, yPixel, 10);
+    }
+  }
 }
 
 function pixelToMeters(xPixel, yPixel) {
@@ -117,9 +174,37 @@ function meterToPixel(xMeter, yMeter) {
 }
 
 function meterToCoordinate(xMeter, yMeter) {
-  const long = (xMeter / totalXMeter) * (maxLong - minLong) + minLong; 
+  const long = (xMeter / totalXMeter) * (maxLong - minLong) + minLong;
   const lat = (yMeter / totalYMeter) * (minLat - maxLat) + maxLat;
-  return long, lat;
+  return { long, lat };
+}
+
+function coordinatesToMeter(longitude, latitude) {
+  const xMeter =
+    turf.distance(
+      turf.point([minLong, maxLat]),
+      turf.point([longitude, maxLat])
+    ) * 1000;
+  const yMeter =
+    turf.distance(
+      turf.point([minLong, maxLat]),
+      turf.point([minLong, latitude])
+    ) * 1000;
+  return { xMeter, yMeter };
+}
+
+function findElementsInRange(sortedArray, min, max, valueKey) {
+  const startIndex = _.sortedIndexBy(
+    sortedArray,
+    { [valueKey]: min },
+    (obj) => obj[valueKey]
+  );
+  const endIndex = _.sortedIndexBy(
+    sortedArray,
+    { [valueKey]: max },
+    (obj) => obj[valueKey]
+  );
+  return _.slice(sortedArray, startIndex, endIndex);
 }
 
 function mousePressed() {
@@ -168,60 +253,4 @@ function calculateTotalArea() {
   console.log("🚀 ~ calculateTotalArea ~ totalLatRange:", totalLatRange);
   totalLongRange = maxLong - minLong;
   console.log("🚀 ~ calculateTotalArea ~ totalLongRange:", totalLongRange);
-}
-
-function drawArea() {
-  viewYHeight = viewXWidth / (width / height);
-
-  const xPointsInView = findElementsInRange(
-    networkDataXSorted,
-    viewXOrigin,
-    viewXOrigin + viewXWidth,
-    "xMeter"
-  );
-  const yPointsInView = findElementsInRange(
-    networkDataYSorted,
-    viewYOrigin,
-    viewYOrigin + viewYHeight,
-    "yMeter"
-  );
-  const pointsInView = _.intersectionBy(xPointsInView, yPointsInView, "index");
-
-  for (let i = 0; i < pointsInView.length; i++) {
-    let pXMeter = pointsInView[i].xMeter;
-    let pYMeter = pointsInView[i].yMeter;
-
-    const { xPixel, yPixel } = meterToPixel(pXMeter, pYMeter);
-    // const xPixel = ((pXMeter - viewXOrigin) / viewXWidth) * width;
-    // const yPixel = ((pYMeter - viewYOrigin) / viewYHeight) * height;
-
-    // console.log("🚀 ~ drawArea ~ pointsInView[i].type:", pointsInView[i].type);
-    if (pointsInView[i].Type === "BT" || pointsInView[i].Type === "BLE") {
-      const noiseX = noise(pXMeter + millis() * 0.0004);
-      const noiseY = noise(pYMeter + millis() * 0.0004 + 8989);
-      // map(noiseX, 0,1 -10, 10)
-      circle(
-        xPixel + map(noiseX, 0, 1, -120, 120),
-        yPixel + map(noiseY, 0, 1, -120, 120),
-        5
-      );
-    } else if (pointsInView[i].Type === "WIFI") {
-      // rectMode(CENTER);
-      circle(xPixel, yPixel, 10);
-    }
-  }
-}
-
-function findElementsInRange(sortedArray, min, max, valueKey) {
-  const startIndex = _.sortedIndexBy(
-    sortedArray,
-    { [valueKey]: min },
-    (obj) => obj[valueKey]
-  );
-  const endIndex = _.sortedIndexBy(
-    sortedArray,
-    { [valueKey]: max },
-    (obj) => obj[valueKey]
-  );
-  return _.slice(sortedArray, startIndex, endIndex);
 }
