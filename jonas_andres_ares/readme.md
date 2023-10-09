@@ -22,6 +22,8 @@ Move plotter to home position: `npm home`
 
 ## iPad Setup
 
+Static IP: 172.20.5.202
+
 Install mkcert on your system (optional but required for local testing on iPad in fullscreen mode)  
 `brew install mkcert`    
 `mkcert --install`  

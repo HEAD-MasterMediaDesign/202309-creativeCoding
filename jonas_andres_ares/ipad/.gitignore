@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
