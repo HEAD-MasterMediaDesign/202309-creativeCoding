@@ -15,6 +15,15 @@ let viewYOrigin = 1050;
 let viewXWidth = 100;
 let viewYHeight;
 
+let trailGraphics;
+
+let trailPositions = [];
+
+let wifiCount = 0;
+let bluetoothCount = 0;
+
+let song;
+
 function preload() {
   table = loadTable("wigle-data.csv", "csv", "header");
 }
@@ -23,8 +32,10 @@ function setup() {
   createCanvas(windowWidth, windowHeight, P2D);
   networkData = table.rows.map((entry) => entry.obj);
 
+  trailGraphics = createGraphics(windowWidth, windowHeight);
+
   calculateTotalArea();
-  
+
   for (let i = 0; i < networkData.length; i++) {
     let pLat = parseFloat(networkData[i].Latitude);
     let pLong = parseFloat(networkData[i].Longitude);
@@ -35,7 +46,13 @@ function setup() {
     networkData[i].xMeter = m.xMeter;
     networkData[i].yMeter = m.yMeter;
 
-    networkData[i].signalStrength = map(parseInt(networkData[i].RSSI), 0, -121, 1, 0);
+    networkData[i].signalStrength = map(
+      parseInt(networkData[i].RSSI),
+      0,
+      -121,
+      1,
+      0
+    );
     networkData[i].index = i;
   }
 
@@ -76,6 +93,13 @@ function setup() {
 function draw() {
   background(0);
 
+  trailGraphics.noStroke();
+  // trailGraphics.fill(0,0,0, 10);
+  // trailGraphics.rect(0,0,width, height);
+  trailGraphics.fill("blue");
+  trailGraphics.circle(width / 2, height / 2, 14);
+  image(trailGraphics, 0, 0);
+
   const deltaX = mouseX - pmouseX;
   const deltaY = mouseY - pmouseY;
 
@@ -89,10 +113,20 @@ function draw() {
   //   console.log("🚀 ~ draw ~ distance:", pinchDistance);
   // }
 
-  drawArea();
-
   fill(255);
   noStroke();
+
+  drawArea();
+
+  trailPositions.push(pixelToMeters(width / 2, height / 2));
+  if (trailPositions.length > 20) trailPositions.shift();
+
+  // for (let i = 0; i < trailPositions.length; i++) {
+  //   const inter = i/trailPositions.length;
+  //   const pix = meterToPixel(trailPositions[i].xMeter, trailPositions[i].yMeter);
+  //   fill(0,0,255,inter * 255);
+  //   circle(pix.xPixel, pix.yPixel, 14 )
+  // }
 
   textSize(16);
   textAlign(LEFT);
@@ -119,6 +153,25 @@ function draw() {
     width - 20,
     height - 20
   );
+
+  noFill();
+  stroke(255);
+  strokeWeight(3);
+  const circle1State = (millis() % 3000) / 3000;
+  const circle2State = ((millis() + 1000) % 3000) / 3000;
+  const circle3State = ((millis() + 2000) % 3000) / 3000;
+
+  stroke(map(circle1State, 0, 1, 255, 0));
+  circle(width / 2, height / 2, circle1State * 400);
+  stroke(map(circle2State, 0, 1, 255, 0));
+  circle(width / 2, height / 2, circle2State * 400);
+  stroke(map(circle3State, 0, 1, 255, 0));
+  circle(width / 2, height / 2, circle3State * 400);
+  // circle(width/2, height/2, ((millis() + 1000) % 2000) * 0.2)
+
+  // image(img, x, y, width, height)
+
+  // drawingContext.filter = 'blur('+str(2)+'px)';
 }
 
 function drawArea() {
@@ -144,6 +197,9 @@ function drawArea() {
 
     const { xPixel, yPixel } = meterToPixel(pXMeter, pYMeter);
 
+    wifiCount = 0;
+    bluetoothCount = 0;
+
     // console.log("🚀 ~ drawArea ~ pointsInView[i].type:", pointsInView[i].type);
     if (pointsInView[i].Type === "BT" || pointsInView[i].Type === "BLE") {
       const noiseX = noise(pXMeter + millis() * 0.0004);
@@ -154,9 +210,13 @@ function drawArea() {
         yPixel + map(noiseY, 0, 1, -120, 120),
         5
       );
+
+      bluetoothCount += 1;
     } else if (pointsInView[i].Type === "WIFI") {
       // rectMode(CENTER);
       circle(xPixel, yPixel, 10);
+
+      wifiCount += 1;
     }
   }
 }
@@ -254,3 +314,5 @@ function calculateTotalArea() {
   totalLongRange = maxLong - minLong;
   console.log("🚀 ~ calculateTotalArea ~ totalLongRange:", totalLongRange);
 }
+
+playSound();
