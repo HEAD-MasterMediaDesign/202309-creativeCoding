@@ -10,8 +10,8 @@ let totalLatRange, totalLongRange;
 let totalXMeter = 0;
 let totalYMeter = 0;
 
-let viewXOrigin = 13000;
-let viewYOrigin = 1050;
+let viewXOrigin = 12990;
+let viewYOrigin = 1200;
 let viewXWidth = 100;
 let viewYHeight;
 
@@ -135,13 +135,18 @@ function draw() {
   //   console.log("🚀 ~ draw ~ distance:", pinchDistance);
   // }
 
+  
+
   fill(255);
   noStroke();
 
   drawArea();
 
-  trailPositions.push(pixelToMeters(width / 2, height / 2));
-  if (trailPositions.length > 20) trailPositions.shift();
+  fill(222, 255, 0)
+  circle(width/2, height/2, 10)
+
+  // trailPositions.push(pixelToMeters(width / 2, height / 2));
+  // if (trailPositions.length > 20) trailPositions.shift();
 
   // for (let i = 0; i < trailPositions.length; i++) {
   //   const inter = i/trailPositions.length;
@@ -150,16 +155,16 @@ function draw() {
   //   circle(pix.xPixel, pix.yPixel, 14 )
   // }
 
-  textSize(12);
-  textAlign(RIGHT);
-  text(round(frameRate()) + " FPS", width - 20, 20);
+  // textSize(12);
+  // textAlign(RIGHT);
+  // text(round(frameRate()) + " FPS", width - 20, 20);
 
-  textAlign(LEFT);
-  text(
-    "x: " + Math.round(viewXOrigin) + " y: " + Math.round(viewYOrigin),
-    20,
-    height - 20
-  );
+  // textAlign(LEFT);
+  // text(
+  //   "x: " + Math.round(viewXOrigin) + " y: " + Math.round(viewYOrigin),
+  //   20,
+  //   height - 20
+  // );
 
   const currentPosition = pixelToMeters(width / 2, height / 2);
   const currentCoordinate = meterToCoordinate(
@@ -176,7 +181,7 @@ function draw() {
       currentCoordinate.long.toFixed(5) +
       "°E",
     width / 2,
-    40
+    height - 50
   );
 
   noFill();

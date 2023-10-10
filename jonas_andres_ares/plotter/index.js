@@ -4,7 +4,7 @@ const AXIDRAW_ENABLED = true;
 
 // PERCENTAGE POSITIONS
 const PENCIL_UP = 100;
-const PENCIL_DOWN = 75;
+const PENCIL_DOWN = 61;
 
 import { exec, execSync } from "child_process";
 import * as fs from "fs";
@@ -18,7 +18,7 @@ import * as oscBridge from "./oscBridge.js";
 const fileList = fs.readdirSync("./");
 for (const file of fileList) {
   if (file.endsWith(".svg")) {
-    // fs.unlinkSync(file);
+    fs.unlinkSync(file);
   }
 }
 
@@ -50,7 +50,7 @@ chokidar.watch(".", { ignored: "node_modules" }).on("add", (path) => {
       execSync(`axicli ${path} -d ${PENCIL_DOWN} -u ${PENCIL_UP}`, {
         encoding: "utf-8",
       });
-      // fs.unlinkSync(path);
+      fs.unlinkSync(path);
       oscBridge.send("drawing-complete");
     }
     

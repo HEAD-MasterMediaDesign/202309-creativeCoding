@@ -55,11 +55,37 @@ class PlotterManager {
     }
   }
 
+  private void callSetPointList(ArrayList<PVector> pointList){
+    try {
+      Class parentClass =  parent.getClass();
+      Method method = parent.getClass().getMethod("setPointList", ArrayList.class);
+      method.invoke(parent, pointList);
+    }
+    catch (Exception e) {
+      // no such method, or an error.. 
+      println("Calling oscEvent failed");
+      e.printStackTrace();
+    }
+
+  }
+
   void oscEvent(String eventName, OscMessage msg){
     println("Plotter Manager: Received osc event:", eventName);
     println("length", msg.arguments().length);
     if(eventName.equals("drawing-complete")){
       plotterBusy = false;
     }
+   
+    if(eventName.equals("points-straight")){
+      ArrayList<PVector> pointList = new ArrayList<PVector>();
+      for (int i = 0; i < msg.arguments().length; i += 2) {
+          float x = msg.get(i).floatValue();
+          float y = msg.get(i + 1).floatValue();
+          println("Point: (" + x + ", " + y + ")");
+          pointList.add(new PVector(x, y));
+      }
+      callSetPointList(pointList);
+    }
+    
   }
 }
