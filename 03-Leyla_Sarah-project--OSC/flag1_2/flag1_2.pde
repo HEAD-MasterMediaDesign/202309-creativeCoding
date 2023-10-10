@@ -1,5 +1,8 @@
 import javax.sound.sampled.*; //<>// //<>// //<>//
+import oscP5.*;
+import netP5.*;
 
+OscP5 oscP5;
 
 
 //Chargement des données
@@ -43,19 +46,21 @@ boolean flagIsInit = false;
 void setup() {
   noStroke();
   size(800, 800);
+  // Créez un objet OscP5 et écoutez le port 3334
+  oscP5 = new OscP5(this, 3334); 
 }
 
 void draw() {
-  //Déclenchement drapeau  
-  if( !flagIsInit ) initFlag();
-  
+  //Déclenchement drapeau
+  if ( !flagIsInit ) initFlag();
+
   background(medium);
   noStroke();
   fond();
   wave();
 }
 
-void initFlag(){
+void initFlag() {
   getCol();
   flagIsInit = true;
 }
@@ -112,12 +117,12 @@ void fond() {
 void getData() {
   img = loadImage(spectoNames[flag]);
   img.loadPixels();
-  
-  
-  if(s1==null){
+
+
+  if (s1==null) {
     s1 = new Analysor(this, wavesNames[flag], 1);
     s2 = new Analysor(this, audioNames[flag], 40);
-  }else{
+  } else {
     s1.changeSource(wavesNames[flag]);
     s2.changeSource(audioNames[flag]);
   }
@@ -193,28 +198,21 @@ void wave() {
   pop();
 }
 
-void keyReleased() {
-  if (key == '0') {
-    flagIsInit = false;
-    flag = 0;
-    clear();
-  };
-  
-  if (key == '1') {
-    flagIsInit = false;
-    flag = 1;
-    clear();
-  };
-  
-  if (key == '2') {
-    flagIsInit = false;
-    flag = 2;
-    clear();
-  };
-  
-  if (key == '3') {
-    flagIsInit = false;
-    flag = 3;
-    clear();
-  };
+void oscEvent(OscMessage msg) {
+  // Cette fonction est appelée chaque fois qu'un message OSC est reçu
+
+  // Affichez le message OSC reçu dans la console
+  println(msg.addrPattern());
+
+  // Vous pouvez traiter le message OSC ici en fonction de son contenu
+  if       (int(msg.addrPattern()) == 0) setFlagState(0);
+  else if  (int(msg.addrPattern()) == 1) setFlagState(1);
+  else if  (int(msg.addrPattern()) == 2) setFlagState(2);
+  else if  (int(msg.addrPattern()) == 3) setFlagState(3);
+}
+
+void setFlagState(int flagState) {
+  flagIsInit = false;
+  flag = flagState;
+  clear();
 }
