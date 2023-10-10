@@ -54,6 +54,15 @@ public class Analysor {
 
     initAnalysor();
   }
+  
+  void changeSource( String path){
+    this.path=path;
+    jingle.close();
+    jingle = minim.loadFile(path);
+    jingle.loop();
+    
+    initAnalysor();
+  }
 
   void initAnalysor() {
     if (jingle!=null)source = jingle;
@@ -67,7 +76,7 @@ public class Analysor {
     beat.detectMode(BeatDetect.FREQ_ENERGY);
     beat.setSensitivity(500);
 
-    this.app.registerMethod("keyEvent", this);
+    //this.app.registerMethod("keyEvent", this);
     //noSmooth();
     pointer = new boolean[fftLin.avgSize()];
     tabChannel = new float[fftLin.avgSize()];

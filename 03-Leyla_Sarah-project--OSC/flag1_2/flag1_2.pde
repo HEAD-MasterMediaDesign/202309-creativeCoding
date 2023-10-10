@@ -1,5 +1,7 @@
 import javax.sound.sampled.*; //<>// //<>// //<>//
 
+
+
 //Chargement des données
 String[] imageNames = { "Mer_de_glace.JPG", "Place_village.JPG", "Téléphérique.JPG", "Funfair2.JPG", "Cimetiere.JPG", "Foret.JPG", "Riviere.JPG", };
 String[] audioNames = {"mer_de_glace_1.mp3", "banc_1.mp3", "telepherique1.mp3", "funfair.mp3", "cimetiere.mp3", "foret.mp3", "riviere.mp3" };
@@ -34,27 +36,28 @@ IntList colorArray = new IntList();
 //int [] colorNumberArray = new int[greyArray.length];
 
 //initialisation drapeau
-int flag = 6;
-boolean start = true;
+int flag = 1;
+boolean flagIsInit = false;
 
 
 void setup() {
   noStroke();
   size(800, 800);
-  if (start == true) {
-    getCol();
-  }
 }
 
 void draw() {
+  //Déclenchement drapeau  
+  if( !flagIsInit ) initFlag();
+  
+  background(medium);
   noStroke();
-  background(255);
-  //Déclenchement drapeau
-  if (start == true) {
-    background(medium);
-    fond();
-    wave();
-  }
+  fond();
+  wave();
+}
+
+void initFlag(){
+  getCol();
+  flagIsInit = true;
 }
 
 //Création du fond
@@ -109,9 +112,15 @@ void fond() {
 void getData() {
   img = loadImage(spectoNames[flag]);
   img.loadPixels();
-
-  s1 = new Analysor(this, wavesNames[flag], 1);
-  s2 = new Analysor(this, audioNames[flag], 40);
+  
+  
+  if(s1==null){
+    s1 = new Analysor(this, wavesNames[flag], 1);
+    s2 = new Analysor(this, audioNames[flag], 40);
+  }else{
+    s1.changeSource(wavesNames[flag]);
+    s2.changeSource(audioNames[flag]);
+  }
   imgCoordonnees = createGeoImage(imageNames[flag]);
 
 
@@ -123,6 +132,8 @@ void getData() {
 //Calcul colonnes selon le spectrogramme
 void getCol() {
   getData();
+  colorArray.clear();
+  globalPercentage = 0;
   for (int x = 0; x < img.width; x++) {
     float sumBrightness = 0;
     for (int y = 0; y < img.height; y++) {
@@ -181,30 +192,29 @@ void wave() {
   endShape();
   pop();
 }
-/*
+
 void keyReleased() {
- if (key == 'a') {
- push();
- flag = 0;
- getData();
- fond();
- start = true;
- pop();
- };
- if (key == 's') {
- push();
- flag = 1;
- //getData();
- getCol();
- start = true;
- pop();
- };
- if (key == 'd') {
- push();
- flag = 2;
- getData();
- fond();
- start = true;
- pop();
- };
- }*/
+  if (key == '0') {
+    flagIsInit = false;
+    flag = 0;
+    clear();
+  };
+  
+  if (key == '1') {
+    flagIsInit = false;
+    flag = 1;
+    clear();
+  };
+  
+  if (key == '2') {
+    flagIsInit = false;
+    flag = 2;
+    clear();
+  };
+  
+  if (key == '3') {
+    flagIsInit = false;
+    flag = 3;
+    clear();
+  };
+}
