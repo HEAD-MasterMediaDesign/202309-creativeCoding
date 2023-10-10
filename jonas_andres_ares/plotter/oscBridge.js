@@ -25,11 +25,11 @@ udpPort.on("ready", function () {
   // ...
 });
 
-export function send(eventName){
+export function send(eventName, args = []){
   udpPort.send(
     {
       address: "/" + eventName,
-      args: [],
+      args: args,
     },
     "127.0.0.1",
     1000

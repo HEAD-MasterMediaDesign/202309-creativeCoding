@@ -1,22 +1,24 @@
+process.env.NODE_EXTRA_CA_CERTS="$(mkcert -CAROOT)/rootCA.pem"
+
+const AXIDRAW_ENABLED = true;
 
 // PERCENTAGE POSITIONS
-const PENCIL_UP = 90;
-const PENCIL_DOWN = 60;
-
+const PENCIL_UP = 100;
+const PENCIL_DOWN = 75;
 
 import { exec, execSync } from "child_process";
-import * as fs from 'fs';
+import * as fs from "fs";
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const chokidar = require("chokidar");
 
-import * as oscBridge from "./oscBridge.js"
+import * as oscBridge from "./oscBridge.js";
 
 // Tidy up: Delet all previous SVG Files
 const fileList = fs.readdirSync("./");
 for (const file of fileList) {
-  if(file.endsWith(".svg")){
-    fs.unlinkSync(file);
+  if (file.endsWith(".svg")) {
+    // fs.unlinkSync(file);
   }
 }
 
@@ -32,23 +34,35 @@ childProcess.on("close", (code) => {
   console.log(`Child process exited with code ${code}`);
 });
 
-execSync(`axicli -d ${PENCIL_DOWN} -u ${PENCIL_UP} --mode manual --manual_cmd raise_pen`);
-execSync(`axicli -d ${PENCIL_DOWN} -u ${PENCIL_UP} --mode manual --manual_cmd walk_home`);
+if (AXIDRAW_ENABLED) {
+  execSync(
+    `axicli -d ${PENCIL_DOWN} -u ${PENCIL_UP} --mode manual --manual_cmd raise_pen`
+  );
+  execSync(
+    `axicli -d ${PENCIL_DOWN} -u ${PENCIL_UP} --mode manual --manual_cmd walk_home`
+  );
+}
 
 // Start watching for new svg files to print
 chokidar.watch(".", { ignored: "node_modules" }).on("add", (path) => {
   if (path.endsWith(".svg")) {
-  execSync(`axicli ${path} -d ${PENCIL_DOWN} -u ${PENCIL_UP}`, { encoding: 'utf-8' });
-  fs.unlinkSync(path);
-  oscBridge.send("drawing-complete")
+    if (AXIDRAW_ENABLED) {
+      execSync(`axicli ${path} -d ${PENCIL_DOWN} -u ${PENCIL_UP}`, {
+        encoding: "utf-8",
+      });
+      // fs.unlinkSync(path);
+      oscBridge.send("drawing-complete");
+    }
+    
   }
 });
 
 // Force pencil to go up on interrupt
-process.once('SIGINT', () => {
-  execSync(`axicli -d 60 -u 90 --mode manual --manual_cmd raise_pen`);
-})
-
+process.once("SIGINT", () => {
+  if (AXIDRAW_ENABLED) {
+    execSync(`axicli -d 60 -u 90 --mode manual --manual_cmd raise_pen`);
+  }
+});
 
 // var udpPort = new osc.UDPPort({
 //   localAddress: "127.0.0.1",
@@ -106,3 +120,31 @@ process.once('SIGINT', () => {
 //     1000
 //   );
 // }, 6000);
+
+// -------------------------------------------------------
+
+import { io } from "socket.io-client";
+
+const socket = io("https://localhost:3333/", {
+  ca: fs.readFileSync("/Users/jonas/Library/Application Support/mkcert/rootCA.pem")
+});
+
+// Listen for the 'pointsStraight' event from the server
+socket.on("pointsStraight", (data) => {
+
+  console.log("Plotter Node.js Received pointsStraight:", data);
+
+  const oscData = [];
+
+  data.forEach(({x, y}) => {
+    oscData.push({ type: 'f', value: x });
+    oscData.push({ type: 'f', value: y });
+  });
+  oscBridge.send("points-straight", oscData);
+});
+
+// Listen for the 'pointsCurved' event from the server
+socket.on("pointsCurved", (data) => {
+  // Handle the received pointsCurved data here
+  console.log("Received pointsCurved:", data);
+});

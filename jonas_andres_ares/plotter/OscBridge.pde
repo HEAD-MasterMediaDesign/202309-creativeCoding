@@ -35,17 +35,19 @@ class OscBridge {
   }
 
   /* incoming osc message are forwarded to the oscEvent method. */
-  void oscEvent(OscMessage theOscMessage) {
+  void oscEvent(OscMessage msg) {
 
-    /* print the address pattern and the typetag of the received OscMessage */
-    // print("### received an osc message.");
-    // print(" adress: "+theOscMessage.addrPattern());
-    // println(" typetag: "+theOscMessage.typetag());
+    // print the address pattern and the typetag of the received OscMessage */
+    // print("### received an osc message.", msg );
+    // Object args = msg.arguments();
+    // print("args", args);
+    // print(" adress: "+msg.addrPattern());
+    // println(" typetag: "+msg.typetag());
 
     try {
       Class parentClass =  parent.getClass();
-      Method method = parent.getClass().getMethod("oscEvent", String.class);
-      method.invoke(parent, theOscMessage.addrPattern().replace("/", ""));
+      Method method = parent.getClass().getMethod("oscEvent", String.class, OscMessage.class);
+      method.invoke(parent, msg.addrPattern().replace("/", ""), msg);
     }
     catch (Exception e) {
       // no such method, or an error.. 
