@@ -43,6 +43,14 @@ Open url in iPad browser (copy link or scan QR code from console)
 
 Add site to your home screen  
 
-Open site from home screen  
+Open site from home screen
 
+Alternatively use a Kiosk App to have real fullscreen:
+https://apps.apple.com/us/app/kiosk-fullscreen-browser/id1544947623
+
+
+# Socket Server
+
+Generate https certificate for local development
+`mkcert localhost 172.20.13.7 ::3333`
 

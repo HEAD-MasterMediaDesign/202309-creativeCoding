@@ -24,12 +24,9 @@ let bluetoothCount = 0;
 
 // const socket = io("http://localhost:3333/");
 
-const socket = io("http://172.20.13.7:3333/");
-
+const socket = io("https://172.20.13.7:3333/");
 
 let myFont;
-
-
 
 function preload() {
   table = loadTable("wigle-data.csv", "csv", "header");
@@ -48,8 +45,13 @@ function setup() {
 
     console.log("start click !!!");
     startAudio();
-  });
 
+    sendPointsToPlotter([
+      { x: 300, y: 300 },
+      { x: 300, y: 350 },
+      { x: 300, y: 400 },
+    ]);
+  });
 
   createCanvas(windowWidth, windowHeight, P2D);
   networkData = table.rows.map((entry) => entry.obj);
@@ -108,15 +110,9 @@ function setup() {
     networkData[2138].xMeter,
     networkData[2138].yMeter
   );
-
-  sendPointsToPlotter([
-    { x: 129, y: 397 },
-    { x: 129, y: 397 },
-  ]);
 }
 
 function draw() {
-
   background(0);
 
   // trailGraphics.noStroke();
@@ -172,13 +168,14 @@ function draw() {
   );
 
   textSize(24);
-  textAlign(LEFT);
+  textAlign(CENTER);
+  fill(222, 255, 0);
   text(
     currentCoordinate.lat.toFixed(5) +
       "°N, " +
       currentCoordinate.long.toFixed(5) +
       "°E",
-    40,
+    width / 2,
     40
   );
 
@@ -188,7 +185,7 @@ function draw() {
   const circle2State = ((millis() + 1000) % 3000) / 3000;
   const circle3State = ((millis() + 2000) % 3000) / 3000;
 
-  const c = color(255, 0, 0);
+  const c = color(222, 255, 0);
   c.setAlpha(map(circle1State, 0, 1, 255, 0));
   stroke(c);
   circle(width / 2, height / 2, circle1State * 400);
@@ -305,9 +302,7 @@ function findElementsInRange(sortedArray, min, max, valueKey) {
   return _.slice(sortedArray, startIndex, endIndex);
 }
 
-function mousePressed() {
-  
-}
+function mousePressed() {}
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
@@ -353,7 +348,7 @@ function calculateTotalArea() {
   console.log("🚀 ~ calculateTotalArea ~ totalLongRange:", totalLongRange);
 }
 
-function sendPointsToPlotter(plotterPointData, curved = true) {
+function sendPointsToPlotter(plotterPointData, curved = false) {
   if (curved) {
     socket.emit("pointsCurved", plotterPointData);
   } else {

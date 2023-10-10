@@ -55,8 +55,9 @@ class PlotterManager {
     }
   }
 
-  void oscEvent(String eventName){
+  void oscEvent(String eventName, OscMessage msg){
     println("Plotter Manager: Received osc event:", eventName);
+    println("length", msg.arguments().length);
     if(eventName.equals("drawing-complete")){
       plotterBusy = false;
     }

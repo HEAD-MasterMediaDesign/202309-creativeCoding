@@ -1,10 +1,19 @@
 const express = require("express");
-const http = require("http");
+// const http = require("http");
+const { createServer } = require("https");
 const { Server } = require("socket.io");
+const { readFileSync } = require("fs");
 
 const app = express();
 
-const server = http.createServer(app);
+const server = createServer({
+  key: readFileSync("localhost+2-key.pem"),
+  cert: readFileSync("localhost+2.pem")
+}, (req, res) => {
+  res.writeHead(200);
+  res.end(`hello world\n`);
+});
+// const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: true,
