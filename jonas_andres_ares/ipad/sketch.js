@@ -7,8 +7,8 @@ let networkDataYSorted;
 let minLat, maxLat, minLong, maxLong;
 let totalLatRange, totalLongRange;
 
-let totalXMeter = 0,
-  totalYMeter = 0;
+let totalXMeter = 0;
+let totalYMeter = 0;
 
 let viewXOrigin = 13000;
 let viewYOrigin = 1050;
@@ -22,13 +22,35 @@ let trailPositions = [];
 let wifiCount = 0;
 let bluetoothCount = 0;
 
-let song;
+// const socket = io("http://localhost:3333/");
+
+const socket = io("http://172.20.13.7:3333/");
+
+
+let myFont;
+
+
 
 function preload() {
   table = loadTable("wigle-data.csv", "csv", "header");
+  myFont = loadFont("assets/AzeretMono-SemiBold.ttf");
+  preloadAudio();
 }
 
 function setup() {
+  textFont(myFont);
+  console.log("🚀 ~ setup ~ socket:", socket);
+
+  const startButton = document.getElementById("start-button");
+  startButton.addEventListener("click", () => {
+    let overlay = document.querySelector("#start-overlay");
+    overlay.style.display = "none";
+
+    console.log("start click !!!");
+    startAudio();
+  });
+
+
   createCanvas(windowWidth, windowHeight, P2D);
   networkData = table.rows.map((entry) => entry.obj);
 
@@ -86,19 +108,23 @@ function setup() {
     networkData[2138].xMeter,
     networkData[2138].yMeter
   );
-  console.log("🚀 ~ setup ~ coord:", coord);
-  console.log("🚀 ~ setup ~ networkData[20138]:", networkData[2138]);
+
+  sendPointsToPlotter([
+    { x: 129, y: 397 },
+    { x: 129, y: 397 },
+  ]);
 }
 
 function draw() {
+
   background(0);
 
-  trailGraphics.noStroke();
-  // trailGraphics.fill(0,0,0, 10);
-  // trailGraphics.rect(0,0,width, height);
-  trailGraphics.fill("blue");
-  trailGraphics.circle(width / 2, height / 2, 14);
-  image(trailGraphics, 0, 0);
+  // trailGraphics.noStroke();
+  // // trailGraphics.fill(0,0,0, 10);
+  // // trailGraphics.rect(0,0,width, height);
+  // trailGraphics.fill("blue");
+  // trailGraphics.circle(width / 2, height / 2, 14);
+  // image(trailGraphics, 0, 0);
 
   const deltaX = mouseX - pmouseX;
   const deltaY = mouseY - pmouseY;
@@ -128,10 +154,11 @@ function draw() {
   //   circle(pix.xPixel, pix.yPixel, 14 )
   // }
 
-  textSize(16);
-  textAlign(LEFT);
-  text(round(frameRate()) + " FPS", 20, 20);
+  textSize(12);
+  textAlign(RIGHT);
+  text(round(frameRate()) + " FPS", width - 20, 20);
 
+  textAlign(LEFT);
   text(
     "x: " + Math.round(viewXOrigin) + " y: " + Math.round(viewYOrigin),
     20,
@@ -144,28 +171,32 @@ function draw() {
     currentPosition.yMeter
   );
 
-  textAlign(RIGHT);
+  textSize(24);
+  textAlign(LEFT);
   text(
     currentCoordinate.lat.toFixed(5) +
       "°N, " +
       currentCoordinate.long.toFixed(5) +
       "°E",
-    width - 20,
-    height - 20
+    40,
+    40
   );
 
   noFill();
-  stroke(255);
-  strokeWeight(3);
+  strokeWeight(4);
   const circle1State = (millis() % 3000) / 3000;
   const circle2State = ((millis() + 1000) % 3000) / 3000;
   const circle3State = ((millis() + 2000) % 3000) / 3000;
 
-  stroke(map(circle1State, 0, 1, 255, 0));
+  const c = color(255, 0, 0);
+  c.setAlpha(map(circle1State, 0, 1, 255, 0));
+  stroke(c);
   circle(width / 2, height / 2, circle1State * 400);
-  stroke(map(circle2State, 0, 1, 255, 0));
+  c.setAlpha(map(circle2State, 0, 1, 255, 0));
+  stroke(c);
   circle(width / 2, height / 2, circle2State * 400);
-  stroke(map(circle3State, 0, 1, 255, 0));
+  c.setAlpha(map(circle3State, 0, 1, 255, 0));
+  stroke(c);
   circle(width / 2, height / 2, circle3State * 400);
   // circle(width/2, height/2, ((millis() + 1000) % 2000) * 0.2)
 
@@ -191,14 +222,16 @@ function drawArea() {
   );
   const pointsInView = _.intersectionBy(xPointsInView, yPointsInView, "index");
 
+  const centerMeters = pixelToMeters(width / 2, height / 2);
+
+  wifiCount = 0;
+  bluetoothCount = 0;
+
   for (let i = 0; i < pointsInView.length; i++) {
     let pXMeter = pointsInView[i].xMeter;
     let pYMeter = pointsInView[i].yMeter;
 
     const { xPixel, yPixel } = meterToPixel(pXMeter, pYMeter);
-
-    wifiCount = 0;
-    bluetoothCount = 0;
 
     // console.log("🚀 ~ drawArea ~ pointsInView[i].type:", pointsInView[i].type);
     if (pointsInView[i].Type === "BT" || pointsInView[i].Type === "BLE") {
@@ -210,15 +243,20 @@ function drawArea() {
         yPixel + map(noiseY, 0, 1, -120, 120),
         5
       );
-
       bluetoothCount += 1;
     } else if (pointsInView[i].Type === "WIFI") {
       // rectMode(CENTER);
       circle(xPixel, yPixel, 10);
-
       wifiCount += 1;
     }
   }
+
+  const bluetoothAmount = map(bluetoothCount, 0, 1000, 0, 1);
+  const wifiAmount = map(wifiCount, 0, 100, 0, 1);
+
+  setAudioPlaybackRate(wifiAmount);
+  setAudioWindowSize(bluetoothAmount);
+  setAudioPitch((wifiAmount + bluetoothAmount) / 2);
 }
 
 function pixelToMeters(xPixel, yPixel) {
@@ -268,7 +306,7 @@ function findElementsInRange(sortedArray, min, max, valueKey) {
 }
 
 function mousePressed() {
-  fullscreen(true);
+  
 }
 
 function windowResized() {
@@ -315,4 +353,12 @@ function calculateTotalArea() {
   console.log("🚀 ~ calculateTotalArea ~ totalLongRange:", totalLongRange);
 }
 
-playSound();
+function sendPointsToPlotter(plotterPointData, curved = true) {
+  if (curved) {
+    socket.emit("pointsCurved", plotterPointData);
+  } else {
+    socket.emit("pointsStraight", plotterPointData);
+  }
+}
+
+function pixelToPlotterPoints(xPixel, yPixel) {}
