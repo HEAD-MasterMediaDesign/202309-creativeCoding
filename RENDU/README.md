@@ -37,7 +37,7 @@ maintenir le clic gauche pour zoomer dans l’image
 ## Groupe 3 / On dirait une carte postale - Katya Bliznyuk, Dasha Kotova, Jasmine Molano
 [On dirait une carte postale](OnDiraitUneCartePostale/)
 
-![capt](OnDiraitUneCartePostal/screen/Carte_1.jpg)
+![capt](OnDiraitUneCartePostal/screen/20231011_143722.jpg)
 ![capt](OnDiraitUneCartePostal/screen/Carte_4.jpg)
 
 
