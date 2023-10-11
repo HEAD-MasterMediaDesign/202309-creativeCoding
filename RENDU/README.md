@@ -1,7 +1,7 @@
 # 2023 09 md1_alpine-glacier | RENDU
 
-## Groupe 1 / UNOTICED - Cloud Adam, Thiel Loren, Seurre Enzo
-[UNOTICED](UNOTICED/)
+## Groupe 1 / UNNOTICED - Cloud Adam, Thiel Loren, Seurre Enzo
+[UNNOTICED](UNNOTICED/)
 
 texte
 
