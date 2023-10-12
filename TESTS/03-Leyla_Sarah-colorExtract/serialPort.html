@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SerialPort</title>
+</head>
+<body>
+
+<button onclick="startSerialCommunication()" >start</button>
+<button class="button-send" >send</button>
+
+
+<script>
+    async function startSerialCommunication(){
+        if(!('serial' in navigator)) return
+
+        const port = await navigator.serial.requestPort()
+
+        document.querySelector('.button-send').addEventListener('click', () => {
+            sendOSC(port)
+        })
+    }
+
+    async function sendOSC(port) {
+        console.log('send message')
+
+        // Ouvrir le port avec une vitesse de 9600 bauds
+        await port.open({ baudRate: 9600 });
+
+        // Chaîne à envoyer
+        const dataToSend = "Hello, Processing!";
+
+        // Convertir la chaîne en tableau de bytes
+        const encoder = new TextEncoder();
+        const data = encoder.encode(dataToSend);
+
+        // Obtenir le flux de sortie (output stream)
+        const writer = port.writable.getWriter();
+
+        // Écrire les données sur le port série
+        await writer.write(data);
+
+        // Fermer le flux de sortie et le port lorsque vous avez terminé
+        writer.releaseLock()
+        await port.close()
+        console.log("msg sending")
+    }
+</script>
+</body>
+
+</html>
