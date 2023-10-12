@@ -1,0 +1,18 @@
+{
+	"name": "web-osc-sample",
+	"description": "web-osc-sample",
+	"version": "0",
+	"scripts": {
+		"start-socket-server": "node main.js",
+		"start-web-client": "npx http-server web-client/."
+	},
+	"dependencies": {
+		"node-osc": "^1.2.0",
+		"socket.io": "^1.7.4"
+	},
+	"keywords": [
+		"osc",
+		"socket",
+		"websockets"
+	]
+}
